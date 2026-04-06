@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>🦖 语法打怪 - 一般现在时</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: rgba(0,0,0,0); }
+body { 
+  font-family: -apple-system, sans-serif; 
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); 
+  min-height: 100vh; 
+  padding: 10px;
+}
+.container { 
+  max-width: 400px; 
+  margin: 0 auto; 
+  background: white; 
+  border-radius: 20px; 
+  overflow: hidden;
+}
+.header { 
+  background: linear-gradient(90deg, #f093fb, #f5576c); 
+  color: white; 
+  padding: 15px; 
+  text-align: center;
+}
+.header h1 { font-size: 18px; }
+.stats { display: flex; justify-content: space-around; margin-top: 10px; font-size: 16px; }
+
+.page { display: none; padding: 20px; }
+.page.active { display: block; }
+
+button, .btn { 
+  display: block; 
+  width: 100%; 
+  padding: 15px; 
+  margin: 10px 0; 
+  border: none; 
+  border-radius: 10px; 
+  font-size: 18px; 
+  font-weight: bold; 
+  cursor: pointer;
+  background: #667eea;
+  color: white;
+  -webkit-appearance: none;
+}
+button:active { opacity: 0.8; }
+.btn-green { background: #00b894; }
+.btn-red { background: #e74c3c; }
+
+.center { text-align: center; padding: 30px 0; }
+.emoji-big { font-size: 80px; }
+
+.battle { 
+  background: linear-gradient(180deg, #1a1a2e, #16213e); 
+  color: white; 
+  padding: 20px; 
+  border-radius: 15px; 
+  text-align: center;
+  margin: 15px 0;
+}
+.monster { font-size: 80px; }
+.hp-bar { background: #333; height: 20px; border-radius: 10px; margin: 10px 0; }
+.hp-fill { background: #e74c3c; height: 100%; border-radius: 10px; transition: width 0.3s; }
+.combo { font-size: 14px; margin-bottom: 5px; color: #ffd700; }
+
+.question { 
+  background: #f8f9fa; 
+  padding: 20px; 
+  border-radius: 15px; 
+  margin: 15px 0;
+}
+.q-text { font-size: 16px; font-weight: bold; margin-bottom: 15px; text-align: center; line-height: 1.6; }
+.options { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.opt { 
+  padding: 15px; 
+  border: 2px solid #667eea; 
+  background: white; 
+  border-radius: 10px; 
+  font-size: 15px;
+  cursor: pointer;
+  text-align: center;
+}
+.opt.correct { background: #00b894; border-color: #00b894; color: white; }
+.opt.wrong { background: #e74c3c; border-color: #e74c3c; color: white; }
+
+.items { display: flex; justify-content: center; gap: 15px; margin: 15px 0; }
+.item { 
+  width: 60px; height: 60px; 
+  border: 2px solid #ddd; 
+  background: white; 
+  border-radius: 10px; 
+  font-size: 30px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+.item-count { 
+  position: absolute; bottom: -5px; right: -5px; 
+  background: #e74c3c; color: white; 
+  width: 22px; height: 22px; border-radius: 50%;
+  font-size: 14px; display: flex; align-items: center; justify-content: center;
+}
+
+.levels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 15px 0; }
+.lvl { 
+  aspect-ratio: 1; 
+  border: 2px solid #667eea; 
+  background: white; 
+  border-radius: 15px; 
+  font-size: 30px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+.lvl span { font-size: 12px; margin-top: 5px; }
+
+.shop-item { 
+  display: flex; align-items: center; 
+  background: #f8f9fa; padding: 15px; border-radius: 10px; 
+  margin: 10px 0; cursor: pointer;
+}
+.shop-item .icon { font-size: 40px; margin-right: 15px; }
+.shop-item .info { flex: 1; }
+.shop-item .price { color: #f39c12; font-weight: bold; }
+
+.hint-box { background: #e8f4f8; padding: 10px; border-radius: 8px; margin-top: 10px; font-size: 13px; color: #333; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🦖 语法打怪 - 一般现在时</h1>
+    <div class="stats">
+      <span>❤️ <b id="lives">3</b></span>
+      <span>🪙 <b id="coins">0</b></span>
+      <span>👾 <b id="defeated">0</b></span>
+    </div>
+  </div>
+
+  <div id="p-menu" class="page active">
+    <div class="center">
+      <div class="emoji-big">🦁⚔️</div>
+      <h2>一般现在时练习</h2>
+      <p style="color:#666;margin:15px 0;font-size:14px;">
+        ✅ be动词: am/is/are<br>
+        ✅ 动词三单: -s/-es<br>
+        肯定句、否定句、一般疑问句
+      </p>
+    </div>
+    <button onclick="go('levels')">开始游戏 🎮</button>
+    <button class="btn-green" onclick="go('shop')">道具商店 🛒</button>
+  </div>
+
+  <div id="p-levels" class="page">
+    <h3 style="text-align:center;margin-bottom:15px;">选择关卡</h3>
+    <div class="levels" id="levels"></div>
+    <button class="btn-red" onclick="go('menu')">返回</button>
+  </div>
+
+  <div id="p-game" class="page">
+    <div class="battle">
+      <div class="combo">连击: <b id="combo">0</b></div>
+      <div class="monster" id="m-emoji">🦁</div>
+      <div id="m-name">小狮子</div>
+      <div class="hp-bar"><div class="hp-fill" id="hp" style="width:100%"></div></div>
+    </div>
+    <div class="items">
+      <div class="item" onclick="use('hint')">💡<span class="item-count" id="n-hint">2</span></div>
+      <div class="item" onclick="use('heal')">❤️<span class="item-count" id="n-heal">1</span></div>
+      <div class="item" onclick="use('shield')">🛡️<span class="item-count" id="n-shield">0</span></div>
+    </div>
+    <div class="question">
+      <div class="q-text" id="q-text">加载中...</div>
+      <div class="options" id="opts"></div>
+      <div id="fb" style="text-align:center;margin-top:10px;font-weight:bold;"></div>
+    </div>
+    <button class="btn-red" onclick="go('levels')">放弃</button>
+  </div>
+
+  <div id="p-shop" class="page">
+    <h3 style="text-align:center;margin-bottom:15px;">🛒 道具商店</h3>
+    <div class="shop-item" onclick="buy('hint')">
+      <div class="icon">💡</div>
+      <div class="info"><div><b>提示卡</b></div><div>显示答案</div></div>
+      <div class="price">🪙 30</div>
+    </div>
+    <div class="shop-item" onclick="buy('heal')">
+      <div class="icon">❤️</div>
+      <div class="info"><div><b>生命药水</b></div><div>恢复生命</div></div>
+      <div class="price">🪙 50</div>
+    </div>
+    <div class="shop-item" onclick="buy('shield')">
+      <div class="icon">🛡️</div>
+      <div class="info"><div><b>护盾</b></div><div>抵挡错误</div></div>
+      <div class="price">🪙 80</div>
+    </div>
+    <button class="btn-red" onclick="go('menu')">返回</button>
+  </div>
+
+  <div id="p-win" class="page">
+    <div class="center">
+      <div class="emoji-big">🎉</div>
+      <h2>击败怪兽！</h2>
+      <button onclick="next()" style="margin-top:20px;">下一关 →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// 怪兽数据
+const monsters = ['🦁','🐯','🐻','🐨','🐼','🐸','🦊','🐷','🐗','🦏'];
+const names = ['小狮子','小老虎','小熊','考拉','熊猫','青蛙','狐狸','小猪','野猪','犀牛王'];
+const hps = [6,6,8,8,8,8,10,10,10,12];
+
+// 一般现在时题库 - 8关，每关8题
+// 格式: [题目, [选项], 正确答案索引, 提示]
+const questions = [
+  // 第1关: be动词基础 (am/is/are)
+  [
+    ["I ___ a student.", ["am", "is", "are"], 0, "I后面用am"],
+    ["He ___ tall.", ["am", "is", "are"], 1, "He后面用is"],
+    ["She ___ happy.", ["am", "is", "are"], 1, "She后面用is"],
+    ["It ___ a cat.", ["am", "is", "are"], 1, "It后面用is"],
+    ["You ___ nice.", ["am", "is", "are"], 2, "You后面用are"],
+    ["We ___ friends.", ["am", "is", "are"], 2, "We后面用are"],
+    ["They ___ students.", ["am", "is", "are"], 2, "They后面用are"],
+    ["My mother ___ kind.", ["am", "is", "are"], 1, "单数用is"]
+  ],
+  // 第2关: be动词否定
+  [
+    ["I ___ sad.", ["am not", "is not", "are not"], 0, "I后面用am not"],
+    ["He ___ short.", ["am not", "is not", "are not"], 1, "He后面用is not"],
+    ["She ___ angry.", ["am not", "is not", "are not"], 1, "She后面用is not"],
+    ["It ___ big.", ["am not", "is not", "are not"], 1, "It后面用is not"],
+    ["You ___ bad.", ["am not", "is not", "are not"], 2, "You后面用are not"],
+    ["We ___ tired.", ["am not", "is not", "are not"], 2, "We后面用are not"],
+    ["They ___ here.", ["am not", "is not", "are not"], 2, "They后面用are not"],
+    ["The dog ___ small.", ["am not", "is not", "are not"], 1, "单数用is not"]
+  ],
+  // 第3关: be动词一般疑问句
+  [
+    ["___ you a student?", ["Am", "Is", "Are"], 2, "You用Are开头"],
+    ["___ he tall?", ["Am", "Is", "Are"], 1, "He用Is开头"],
+    ["___ she happy?", ["Am", "Is", "Are"], 1, "She用Is开头"],
+    ["___ it a cat?", ["Am", "Is", "Are"], 1, "It用Is开头"],
+    ["___ we ready?", ["Am", "Is", "Are"], 2, "We用Are开头"],
+    ["___ they here?", ["Am", "Is", "Are"], 2, "They用Are开头"],
+    ["___ I late?", ["Am", "Is", "Are"], 0, "I用Am开头"],
+    ["___ your father tall?", ["Am", "Is", "Are"], 1, "单数用Is开头"]
+  ],
+  // 第4关: 动词三单肯定句
+  [
+    ["He ___ (like) apples.", ["like", "likes", "liking"], 1, "He后面动词加s"],
+    ["She ___ (watch) TV.", ["watch", "watches", "watching"], 1, "She后面动词加es"],
+    ["My brother ___ (play) football.", ["play", "plays", "playing"], 1, "第三人称单数加s"],
+    ["The cat ___ (sleep) a lot.", ["sleep", "sleeps", "sleeping"], 1, "第三人称单数加s"],
+    ["Tom ___ (study) hard.", ["study", "studies", "studying"], 1, "辅音+y变ies"],
+    ["Mary ___ (go) to school.", ["go", "goes", "going"], 1, "以o结尾加es"],
+    ["My father ___ (work) here.", ["work", "works", "working"], 1, "第三人称单数加s"],
+    ["The dog ___ (bark) loudly.", ["bark", "barks", "barking"], 1, "第三人称单数加s"]
+  ],
+  // 第5关: 动词否定句 (don't/doesn't)
+  [
+    ["I ___ (like) coffee.", ["don't like", "doesn't like", "not like"], 0, "I后面用don't"],
+    ["You ___ (eat) meat.", ["don't eat", "doesn't eat", "not eat"], 0, "You后面用don't"],
+    ["We ___ (play) games.", ["don't play", "doesn't play", "not play"], 0, "We后面用don't"],
+    ["They ___ (watch) TV.", ["don't watch", "doesn't watch", "not watch"], 0, "They后面用don't"],
+    ["He ___ (like) fish.", ["don't like", "doesn't like", "not like"], 1, "He后面用doesn't"],
+    ["She ___ (eat) bread.", ["don't eat", "doesn't eat", "not eat"], 1, "She后面用doesn't"],
+    ["My brother ___ (play) cards.", ["don't play", "doesn't play", "not play"], 1, "第三人称单数用doesn't"],
+    ["The cat ___ (drink) milk.", ["don't drink", "doesn't drink", "not drink"], 1, "第三人称单数用doesn't"]
+  ],
+  // 第6关: 动词一般疑问句 (Do/Does)
+  [
+    ["___ you like apples?", ["Do", "Does", "Is"], 0, "You用Do开头"],
+    ["___ they play football?", ["Do", "Does", "Are"], 0, "They用Do开头"],
+    ["___ we have time?", ["Do", "Does", "Are"], 0, "We用Do开头"],
+    ["___ I look OK?", ["Do", "Does", "Am"], 0, "I用Do开头"],
+    ["___ he like dogs?", ["Do", "Does", "Is"], 1, "He用Does开头"],
+    ["___ she watch TV?", ["Do", "Does", "Is"], 1, "She用Does开头"],
+    ["___ your father work here?", ["Do", "Does", "Is"], 1, "第三人称单数用Does"],
+    ["___ the cat sleep a lot?", ["Do", "Does", "Is"], 1, "第三人称单数用Does"]
+  ],
+  // 第7关: 综合练习1
+  [
+    ["My sister ___ (have) a cat.", ["have", "has", "having"], 1, "have的三单是has"],
+    ["___ your mother a teacher?", ["Do", "Does", "Is"], 2, "询问职业用Is"],
+    ["They ___ (not/have) a car.", ["don't have", "doesn't have", "not have"], 0, "复数用don't"],
+    ["___ Tom go to school?", ["Do", "Does", "Is"], 1, "Tom用Does"],
+    ["The students ___ (be) happy.", ["am", "is", "are"], 2, "复数用are"],
+    ["___ it a big house?", ["Do", "Does", "Is"], 2, "询问事物用Is"],
+    ["My parents ___ (live) in Beijing.", ["live", "lives", "living"], 0, "复数不加s"],
+    ["___ she have a pen?", ["Do", "Does", "Is"], 1, "She用Does"]
+  ],
+  // 第8关: 综合练习2
+  [
+    ["Water ___ (boil) at 100℃.", ["boil", "boils", "boiling"], 1, "客观事实用三单"],
+    ["I usually ___ (get) up at 7.", ["get", "gets", "getting"], 0, "I后面不加s"],
+    ["___ the sun rise in the east?", ["Do", "Does", "Is"], 1, "客观事实用Does"],
+    ["She always ___ (brush) teeth.", ["brush", "brushes", "brushing"], 1, "sh结尾加es"],
+    ["We never ___ (eat) junk food.", ["eat", "eats", "eating"], 0, "复数不加s"],
+    ["___ your brother like music?", ["Do", "Does", "Is"], 1, "第三人称用Does"],
+    ["The earth ___ (go) around sun.", ["go", "goes", "going"], 1, "客观真理用三单"],
+    ["___ they often play games?", ["Do", "Does", "Are"], 0, "复数用Do"]
+  ]
+];
+
+// 游戏状态
+let g = { lv: 1, qi: 0, lives: 3, coins: 0, beat: 0, combo: 0, items: { hint: 2, heal: 1, shield: 0 }, shield: false, mhp: 0, hp: 0, qs: [] };
+
+function save() { try { localStorage.setItem('spGame', JSON.stringify(g)); } catch(e) {} }
+function load() { try { let d = localStorage.getItem('spGame'); if(d) g = JSON.parse(d); } catch(e) {} upd(); }
+function upd() {
+  document.getElementById('lives').textContent = g.lives;
+  document.getElementById('coins').textContent = g.coins;
+  document.getElementById('defeated').textContent = g.beat;
+  document.getElementById('n-hint').textContent = g.items.hint;
+  document.getElementById('n-heal').textContent = g.items.heal;
+  document.getElementById('n-shield').textContent = g.items.shield;
+}
+
+function go(p) {
+  document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+  document.getElementById('p-'+p).classList.add('active');
+  if(p=='levels') renderLvls();
+}
+
+function renderLvls() {
+  let h = '';
+  for(let i=1; i<=8; i++) {
+    let o = i<=g.beat+1 ? 1 : 0.3;
+    h += '<div class="lvl" style="opacity:'+o+'" onclick="if('+i+'<='+g.beat+'+1)start('+i+')">'+monsters[i-1]+'<span>Lv.'+i+'</span></div>';
+  }
+  document.getElementById('levels').innerHTML = h;
+}
+
+function start(lv) {
+  g.lv = lv; g.qi = 0; g.combo = 0; g.shield = false;
+  g.mhp = hps[lv-1]; g.hp = g.mhp;
+  g.qs = [...questions[lv-1]].sort(()=>Math.random()-0.5);
+  go('game');
+  document.getElementById('m-emoji').textContent = monsters[lv-1];
+  document.getElementById('m-name').textContent = names[lv-1];
+  updateHp(); upd(); showQ();
+}
+
+function updateHp() { document.getElementById('hp').style.width = (g.hp/g.mhp*100)+'%'; }
+
+function showQ() {
+  let q = g.qs[g.qi];
+  document.getElementById('q-text').innerHTML = q[0];
+  document.getElementById('fb').textContent = '';
+  document.getElementById('fb').style.color = '';
+  let h = '';
+  q[1].forEach((opt, i) => { h += '<div class="opt" onclick="ans('+i+',this)">'+opt+'</div>'; });
+  document.getElementById('opts').innerHTML = h;
+  window.answering = true;
+}
+
+function ans(idx, el) {
+  if(!window.answering) return;
+  window.answering = false;
+  let q = g.qs[g.qi];
+  let fb = document.getElementById('fb');
+  
+  if(idx == q[2]) {
+    el.classList.add('correct');
+    g.combo++;
+    let crit = g.combo >= 3;
+    let dmg = crit ? 2 : 1;
+    g.hp -= dmg;
+    g.coins += crit ? 10 : 5;
+    fb.textContent = crit ? '💥 暴击! -'+dmg+'HP' : '⚔️ 攻击! -'+dmg+'HP';
+    fb.style.color = '#00b894';
+    if(crit) g.combo = 0;
+    updateHp(); upd();
+    if(g.hp <= 0) { setTimeout(()=>{g.beat++; save(); go('win');}, 800); return; }
+  } else {
+    el.classList.add('wrong');
+    if(g.shield) {
+      g.shield = false;
+      fb.textContent = '🛡️ 护盾保护!';
+      fb.style.color = '#3498db';
+    } else {
+      g.lives--; g.combo = 0;
+      fb.innerHTML = '💡 ' + (q[3] || '再想想');
+      fb.style.color = '#e74c3c';
+      if(g.lives <= 0) { alert('游戏结束!'); go('menu'); return; }
+    }
+    upd();
+  }
+  document.getElementById('combo').textContent = g.combo;
+  setTimeout(()=>{g.qi++; if(g.qi >= 8) { if(g.hp > 0) {g.beat++; save(); go('win');} else {alert('没打完怪兽!'); go('levels');} return;} showQ();}, 1200);
+}
+
+function use(t) {
+  if(g.items[t] <= 0) return;
+  if(t=='hint') {
+    g.items.hint--;
+    let q = g.qs[g.qi];
+    document.getElementById('fb').innerHTML = '💡 ' + (q[3] || '选第'+(q[2]+1)+'个');
+    document.getElementById('fb').style.color = '#3498db';
+  } else if(t=='heal') {
+    if(g.lives >= 3) return alert('生命已满!');
+    g.items.heal--; g.lives++;
+  } else if(t=='shield') {
+    if(g.shield) return;
+    g.items.shield--; g.shield = true;
+    alert('🛡️ 护盾激活!');
+  }
+  save(); upd();
+}
+
+function buy(t) {
+  let p = {hint:30, heal:50, shield:80};
+  if(g.coins < p[t]) return alert('金币不足!');
+  g.coins -= p[t]; g.items[t]++;
+  save(); upd();
+  alert('购买成功!');
+}
+
+function next() { renderLvls(); go('levels'); }
+
+load();
+</script>
+</body>
+</html>

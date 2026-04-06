@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>🦖 语法打怪 - 混合时态练习</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: rgba(0,0,0,0); }
+body { 
+  font-family: -apple-system, sans-serif; 
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); 
+  min-height: 100vh; 
+  padding: 10px;
+}
+.container { 
+  max-width: 400px; 
+  margin: 0 auto; 
+  background: white; 
+  border-radius: 20px; 
+  overflow: hidden;
+}
+.header { 
+  background: linear-gradient(90deg, #667eea, #764ba2); 
+  color: white; 
+  padding: 15px; 
+  text-align: center;
+}
+.header h1 { font-size: 18px; }
+.stats { display: flex; justify-content: space-around; margin-top: 10px; font-size: 16px; }
+
+.page { display: none; padding: 20px; }
+.page.active { display: block; }
+
+button, .btn { 
+  display: block; 
+  width: 100%; 
+  padding: 15px; 
+  margin: 10px 0; 
+  border: none; 
+  border-radius: 10px; 
+  font-size: 18px; 
+  font-weight: bold; 
+  cursor: pointer;
+  background: #667eea;
+  color: white;
+  -webkit-appearance: none;
+}
+button:active { opacity: 0.8; }
+.btn-green { background: #00b894; }
+.btn-red { background: #e74c3c; }
+
+.center { text-align: center; padding: 30px 0; }
+.emoji-big { font-size: 80px; }
+
+.battle { 
+  background: linear-gradient(180deg, #1a1a2e, #16213e); 
+  color: white; 
+  padding: 20px; 
+  border-radius: 15px; 
+  text-align: center;
+  margin: 15px 0;
+}
+.monster { font-size: 80px; }
+.hp-bar { background: #333; height: 20px; border-radius: 10px; margin: 10px 0; }
+.hp-fill { background: #e74c3c; height: 100%; border-radius: 10px; transition: width 0.3s; }
+.combo { font-size: 14px; margin-bottom: 5px; color: #ffd700; }
+
+.question { 
+  background: #f8f9fa; 
+  padding: 20px; 
+  border-radius: 15px; 
+  margin: 15px 0;
+}
+.q-text { font-size: 16px; font-weight: bold; margin-bottom: 15px; text-align: center; line-height: 1.6; }
+.options { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.opt { 
+  padding: 15px; 
+  border: 2px solid #667eea; 
+  background: white; 
+  border-radius: 10px; 
+  font-size: 15px;
+  cursor: pointer;
+  text-align: center;
+}
+.opt.correct { background: #00b894; border-color: #00b894; color: white; }
+.opt.wrong { background: #e74c3c; border-color: #e74c3c; color: white; }
+
+.items { display: flex; justify-content: center; gap: 15px; margin: 15px 0; }
+.item { 
+  width: 60px; height: 60px; 
+  border: 2px solid #ddd; 
+  background: white; 
+  border-radius: 10px; 
+  font-size: 30px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+.item-count { 
+  position: absolute; bottom: -5px; right: -5px; 
+  background: #e74c3c; color: white; 
+  width: 22px; height: 22px; border-radius: 50%;
+  font-size: 14px; display: flex; align-items: center; justify-content: center;
+}
+
+.levels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 15px 0; }
+.lvl { 
+  aspect-ratio: 1; 
+  border: 2px solid #667eea; 
+  background: white; 
+  border-radius: 15px; 
+  font-size: 30px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+.lvl span { font-size: 12px; margin-top: 5px; }
+
+.shop-item { 
+  display: flex; align-items: center; 
+  background: #f8f9fa; padding: 15px; border-radius: 10px; 
+  margin: 10px 0; cursor: pointer;
+}
+.shop-item .icon { font-size: 40px; margin-right: 15px; }
+.shop-item .info { flex: 1; }
+.shop-item .price { color: #f39c12; font-weight: bold; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🦖 语法打怪 - 混合时态</h1>
+    <div class="stats">
+      <span>❤️ <b id="lives">3</b></span>
+      <span>🪙 <b id="coins">0</b></span>
+      <span>👾 <b id="defeated">0</b></span>
+    </div>
+  </div>
+
+  <div id="p-menu" class="page active">
+    <div class="center">
+      <div class="emoji-big">🦄⚔️</div>
+      <h2>混合时态练习</h2>
+      <p style="color:#666;margin:15px 0;font-size:14px;">
+        ✅ 一般现在时: 习惯/事实<br>
+        ✅ 现在进行时: 正在发生<br>
+        肯定句、否定句、一般疑问句
+      </p>
+    </div>
+    <button onclick="go('levels')">开始游戏 🎮</button>
+    <button class="btn-green" onclick="go('shop')">道具商店 🛒</button>
+  </div>
+
+  <div id="p-levels" class="page">
+    <h3 style="text-align:center;margin-bottom:15px;">选择关卡</h3>
+    <div class="levels" id="levels"></div>
+    <button class="btn-red" onclick="go('menu')">返回</button>
+  </div>
+
+  <div id="p-game" class="page">
+    <div class="battle">
+      <div class="combo">连击: <b id="combo">0</b></div>
+      <div class="monster" id="m-emoji">🦄</div>
+      <div id="m-name">小独角兽</div>
+      <div class="hp-bar"><div class="hp-fill" id="hp" style="width:100%"></div></div>
+    </div>
+    <div class="items">
+      <div class="item" onclick="use('hint')">💡<span class="item-count" id="n-hint">2</span></div>
+      <div class="item" onclick="use('heal')">❤️<span class="item-count" id="n-heal">1</span></div>
+      <div class="item" onclick="use('shield')">🛡️<span class="item-count" id="n-shield">0</span></div>
+    </div>
+    <div class="question">
+      <div class="q-text" id="q-text">加载中...</div>
+      <div class="options" id="opts"></div>
+      <div id="fb" style="text-align:center;margin-top:10px;font-weight:bold;"></div>
+    </div>
+    <button class="btn-red" onclick="go('levels')">放弃</button>
+  </div>
+
+  <div id="p-shop" class="page">
+    <h3 style="text-align:center;margin-bottom:15px;">🛒 道具商店</h3>
+    <div class="shop-item" onclick="buy('hint')">
+      <div class="icon">💡</div>
+      <div class="info"><div><b>提示卡</b></div><div>显示答案</div></div>
+      <div class="price">🪙 30</div>
+    </div>
+    <div class="shop-item" onclick="buy('heal')">
+      <div class="icon">❤️</div>
+      <div class="info"><div><b>生命药水</b></div><div>恢复生命</div></div>
+      <div class="price">🪙 50</div>
+    </div>
+    <div class="shop-item" onclick="buy('shield')">
+      <div class="icon">🛡️</div>
+      <div class="info"><div><b>护盾</b></div><div>抵挡错误</div></div>
+      <div class="price">🪙 80</div>
+    </div>
+    <button class="btn-red" onclick="go('menu')">返回</button>
+  </div>
+
+  <div id="p-win" class="page">
+    <div class="center">
+      <div class="emoji-big">🎉</div>
+      <h2>击败怪兽！</h2>
+      <button onclick="next()" style="margin-top:20px;">下一关 →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// 怪兽数据
+const monsters = ['🦄','🐲','🦕','🐙','🦈','🦖','🐊','🦂','🐲','🐉'];
+const names = ['小独角兽','小龙','恐龙','章鱼','鲨鱼','霸王龙','鳄鱼','毒蝎','火龙','巨龙'];
+const hps = [6,6,8,8,8,10,10,10,12,12];
+
+// 混合时态题库 - 10关，每关8题
+// 一般现在时和现在进行时混合
+const questions = [
+  // 第1关: 基础对比
+  [
+    ["I ___ a student. (一般现在时)", ["am", "is", "are"], 0, "I后面用am"],
+    ["I ___ reading now. (现在进行时)", ["am", "is", "are"], 0, "I后面用am + doing"],
+    ["He ___ tall. (一般现在时)", ["am", "is", "are"], 1, "He后面用is"],
+    ["He ___ running now. (现在进行时)", ["am", "is", "are"], 1, "He后面用is + doing"],
+    ["They ___ happy. (一般现在时)", ["am", "is", "are"], 2, "They后面用are"],
+    ["They ___ playing now. (现在进行时)", ["am", "is", "are"], 2, "They后面用are + doing"],
+    ["She ___ a teacher. (一般现在时)", ["am", "is", "are"], 1, "She后面用is"],
+    ["She ___ dancing now. (现在进行时)", ["am", "is", "are"], 1, "She后面用is + doing"]
+  ],
+  // 第2关: 动词对比
+  [
+    ["He ___ to school every day. (一般现在时)", ["go", "goes", "going"], 1, "三单一般现在时加es"],
+    ["He ___ to school now. (现在进行时)", ["is go", "is going", "going"], 1, "现在进行时用is + doing"],
+    ["They ___ football on Sundays. (一般现在时)", ["play", "plays", "playing"], 0, "复数用原形"],
+    ["They ___ football now. (现在进行时)", ["are play", "are playing", "playing"], 1, "现在进行时用are + doing"],
+    ["My mother ___ dinner every day. (一般现在时)", ["cook", "cooks", "cooking"], 1, "三单加s"],
+    ["My mother ___ dinner now. (现在进行时)", ["is cook", "is cooking", "cooking"], 1, "现在进行时用is + doing"],
+    ["We ___ TV in the evening. (一般现在时)", ["watch", "watches", "watching"], 0, "复数用原形"],
+    ["We ___ TV now. (现在进行时)", ["are watch", "are watching", "watching"], 1, "现在进行时用are + doing"]
+  ],
+  // 第3关: 否定句对比
+  [
+    ["He ___ like apples. (一般现在时否定)", ["don't", "doesn't", "isn't"], 1, "三单否定用doesn't"],
+    ["He ___ eating apples now. (现在进行时否定)", ["don't", "doesn't", "isn't"], 2, "be动词否定用isn't"],
+    ["I ___ sad. (一般现在时否定)", ["am not", "is not", "are not"], 0, "I否定用am not"],
+    ["I ___ sleeping now. (现在进行时否定)", ["am not", "is not", "are not"], 0, "I否定用am not + doing"],
+    ["They ___ play games. (一般现在时否定)", ["don't", "doesn't", "aren't"], 0, "复数否定用don't"],
+    ["They ___ playing games now. (现在进行时否定)", ["don't", "doesn't", "aren't"], 2, "现在进行时用aren't + doing"],
+    ["She ___ a student. (一般现在时否定)", ["am not", "isn't", "aren't"], 1, "She否定用isn't"],
+    ["She ___ reading now. (现在进行时否定)", ["am not", "isn't", "aren't"], 1, "现在进行时用isn't + doing"]
+  ],
+  // 第4关: 疑问句对比
+  [
+    ["___ he like apples? (一般现在时)", ["Do", "Does", "Is"], 1, "三单疑问用Does"],
+    ["___ he eating apples? (现在进行时)", ["Do", "Does", "Is"], 2, "现在进行时用Is + doing"],
+    ["___ you a student? (一般现在时)", ["Do", "Does", "Are"], 2, "you用Are"],
+    ["___ you reading now? (现在进行时)", ["Do", "Does", "Are"], 2, "现在进行时用Are + doing"],
+    ["___ they play football? (一般现在时)", ["Do", "Does", "Are"], 0, "复数疑问用Do"],
+    ["___ they playing now? (现在进行时)", ["Do", "Does", "Are"], 2, "现在进行时用Are + doing"],
+    ["___ she go to school? (一般现在时)", ["Do", "Does", "Is"], 1, "三单疑问用Does"],
+    ["___ she dancing now? (现在进行时)", ["Do", "Does", "Is"], 2, "现在进行时用Is + doing"]
+  ],
+  // 第5关: 时间词提示
+  [
+    ["The sun ___ in the east. (一般现在时)", ["rise", "rises", "rising"], 1, "客观事实用三单"],
+    ["Look! The sun ___. (现在进行时)", ["is rise", "is rising", "rising"], 1, "Look!提示用现在进行时"],
+    ["I usually ___ up at 7. (usually提示)", ["get", "gets", "am getting"], 0, "usually是一般现在时标志"],
+    ["Listen! She ___. (Listen提示)", ["sings", "is singing", "sing"], 1, "Listen!提示用现在进行时"],
+    ["He ___ TV every night. (every提示)", ["watch", "watches", "is watching"], 1, "every day是一般现在时标志"],
+    ["Be quiet! The baby ___. (Be quiet提示)", ["sleeps", "is sleeping", "sleep"], 1, "Be quiet!提示用现在进行时"],
+    ["The earth ___ around the sun. (一般现在时)", ["go", "goes", "going"], 1, "客观事实用三单"],
+    ["Hurry up! We ___. (Hurry up提示)", ["wait", "are waiting", "waiting"], 1, "Hurry up!提示用现在进行时"]
+  ],
+  // 第6关: 综合练习1
+  [
+    ["___ your father a doctor? (一般现在时)", ["Do", "Does", "Is"], 2, "询问职业用Is"],
+    ["___ your father working now? (现在进行时)", ["Do", "Does", "Is"], 2, "现在进行时用Is + doing"],
+    ["My dog ___ loudly at night. (一般现在时)", ["bark", "barks", "is barking"], 1, "习惯性动作用三单"],
+    ["My dog ___ loudly now. (现在进行时)", ["bark", "barks", "is barking"], 2, "现在进行时用is + doing"],
+    ["They ___ in Beijing. (一般现在时)", ["live", "lives", "are living"], 0, "状态用一般现在时"],
+    ["They ___ in Beijing this year. (现在进行时表暂时)", ["live", "lives", "are living"], 2, "暂时性动作用现在进行时"],
+    ["The train ___ at 9:00. (时刻表用一般现在时)", ["leave", "leaves", "is leaving"], 1, "时刻表用三单"],
+    ["The train ___. Look! (Look提示)", ["leave", "leaves", "is leaving"], 2, "Look!用现在进行时"]
+  ],
+  // 第7关: 综合练习2
+  [
+    ["I ___ breakfast at 7. (一般现在时)", ["have", "has", "am having"], 0, "习惯用一般现在时"],
+    ["I ___ breakfast now. (现在进行时)", ["have", "has", "am having"], 2, "现在进行时用am having"],
+    ["She always ___ early. (always提示)", ["arrive", "arrives", "is arriving"], 1, "always是一般现在时标志"],
+    ["She ___ early today. (现在进行时)", ["arrive", "arrives", "is arriving"], 2, "今天暂时用现在进行时"],
+    ["Water ___ at 100℃. (一般现在时)", ["boil", "boils", "is boiling"], 1, "客观事实用三单"],
+    ["The water ___. Turn it off! (现在进行时)", ["boil", "boils", "is boiling"], 2, "现在进行时用is boiling"],
+    ["He never ___ late. (never提示)", ["come", "comes", "is coming"], 1, "never是一般现在时标志"],
+    ["He ___ late today. (现在进行时)", ["come", "comes", "is coming"], 2, "今天暂时用现在进行时"]
+  ],
+  // 第8关: 综合练习3
+  [
+    ["___ you feel OK? (一般现在时)", ["Do", "Does", "Are"], 0, "feel是实义动词，用Do"],
+    ["___ you feeling OK? (现在进行时)", ["Do", "Does", "Are"], 2, "feeling是现在分词，用Are"],
+    ["The children ___ in the garden. (一般现在时)", ["play", "plays", "are playing"], 0, "复数用原形"],
+    ["The children ___ in the garden now. (现在进行时)", ["play", "plays", "are playing"], 2, "现在进行时用are playing"],
+    ["My sister ___ medicine. (一般现在时)", ["study", "studies", "is studying"], 1, "三单动词变y为i加es"],
+    ["My sister ___ medicine this term. (现在进行时表暂时)", ["study", "studies", "is studying"], 2, "暂时性用现在进行时"],
+    ["I often ___ to music. (often提示)", ["listen", "listens", "am listening"], 0, "often是一般现在时标志"],
+    ["I ___ to music now. (now提示)", ["listen", "listens", "am listening"], 2, "now是现在进行时标志"]
+  ],
+  // 第9关: 综合练习4
+  [
+    ["Cats ___ mice. (一般现在时表能力)", ["catch", "catches", "are catching"], 1, "三单动词加es"],
+    ["Look! The cat ___ a mouse. (现在进行时)", ["catch", "catches", "is catching"], 2, "Look!用现在进行时"],
+    ["He ___ English well. (一般现在时)", ["speak", "speaks", "is speaking"], 1, "能力用一般现在时三单"],
+    ["He ___ English on the phone. (现在进行时)", ["speak", "speaks", "is speaking"], 2, "正在做用现在进行时"],
+    ["Birds ___ south in winter. (一般现在时)", ["fly", "flies", "are flying"], 1, "三单fly变y为i加es"],
+    ["The birds ___ south now. (现在进行时)", ["fly", "flies", "are flying"], 2, "现在进行时用are flying"],
+    ["The shop ___ at 9. (一般现在时)", ["open", "opens", "is opening"], 1, "时刻表用三单"],
+    ["The shop ___ now. Go inside! (现在进行时)", ["open", "opens", "is opening"], 2, "正在发生用现在进行时"]
+  ],
+  // 第10关: 综合练习5
+  [
+    ["I ___ in this school. (一般现在时)", ["study", "studies", "am studying"], 0, "长期状态用一般现在时"],
+    ["I ___ for the exam now. (现在进行时)", ["study", "studies", "am studying"], 2, "现在进行时用am studying"],
+    ["The moon ___ around the earth. (一般现在时)", ["move", "moves", "is moving"], 1, "客观事实用三单"],
+    ["The moon ___ behind the clouds. (现在进行时)", ["move", "moves", "is moving"], 2, "现在进行时用is moving"],
+    ["We ___ to school by bus. (一般现在时)", ["go", "goes", "are going"], 0, "习惯性动作用原形"],
+    ["We ___ to school. Let's go! (现在进行时)", ["go", "goes", "are going"], 2, "现在进行时用are going"],
+    ["Fish ___ in water. (一般现在时)", ["live", "lives", "are living"], 0, "客观事实用原形（复数）"],
+    ["The fish ___ in the tank. (现在进行时)", ["live", "lives", "is living"], 2, "单数现在进行时用is living"]
+  ]
+];
+
+// 游戏状态
+let g = { lv: 1, qi: 0, lives: 3, coins: 0, beat: 0, combo: 0, items: { hint: 2, heal: 1, shield: 0 }, shield: false, mhp: 0, hp: 0, qs: [] };
+
+function save() { try { localStorage.setItem('mixGame', JSON.stringify(g)); } catch(e) {} }
+function load() { try { let d = localStorage.getItem('mixGame'); if(d) g = JSON.parse(d); } catch(e) {} upd(); }
+function upd() {
+  document.getElementById('lives').textContent = g.lives;
+  document.getElementById('coins').textContent = g.coins;
+  document.getElementById('defeated').textContent = g.beat;
+  document.getElementById('n-hint').textContent = g.items.hint;
+  document.getElementById('n-heal').textContent = g.items.heal;
+  document.getElementById('n-shield').textContent = g.items.shield;
+}
+
+function go(p) {
+  document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+  document.getElementById('p-'+p).classList.add('active');
+  if(p=='levels') renderLvls();
+}
+
+function renderLvls() {
+  let h = '';
+  for(let i=1; i<=10; i++) {
+    let o = i<=g.beat+1 ? 1 : 0.3;
+    h += '<div class="lvl" style="opacity:'+o+'" onclick="if('+i+'<='+g.beat+'+1)start('+i+')">'+monsters[i-1]+'<span>Lv.'+i+'</span></div>';
+  }
+  document.getElementById('levels').innerHTML = h;
+}
+
+function start(lv) {
+  g.lv = lv; g.qi = 0; g.combo = 0; g.shield = false;
+  g.mhp = hps[lv-1]; g.hp = g.mhp;
+  g.qs = [...questions[lv-1]].sort(()=>Math.random()-0.5);
+  go('game');
+  document.getElementById('m-emoji').textContent = monsters[lv-1];
+  document.getElementById('m-name').textContent = names[lv-1];
+  updateHp(); upd(); showQ();
+}
+
+function updateHp() { document.getElementById('hp').style.width = (g.hp/g.mhp*100)+'%'; }
+
+function showQ() {
+  let q = g.qs[g.qi];
+  document.getElementById('q-text').innerHTML = q[0];
+  document.getElementById('fb').textContent = '';
+  document.getElementById('fb').style.color = '';
+  let h = '';
+  q[1].forEach((opt, i) => { h += '<div class="opt" onclick="ans('+i+',this)">'+opt+'</div>'; });
+  document.getElementById('opts').innerHTML = h;
+  window.answering = true;
+}
+
+function ans(idx, el) {
+  if(!window.answering) return;
+  window.answering = false;
+  let q = g.qs[g.qi];
+  let fb = document.getElementById('fb');
+  
+  if(idx == q[2]) {
+    el.classList.add('correct');
+    g.combo++;
+    let crit = g.combo >= 3;
+    let dmg = crit ? 2 : 1;
+    g.hp -= dmg;
+    g.coins += crit ? 10 : 5;
+    fb.textContent = crit ? '💥 暴击! -'+dmg+'HP' : '⚔️ 攻击! -'+dmg+'HP';
+    fb.style.color = '#00b894';
+    if(crit) g.combo = 0;
+    updateHp(); upd();
+    if(g.hp <= 0) { setTimeout(()=>{g.beat++; save(); go('win');}, 800); return; }
+  } else {
+    el.classList.add('wrong');
+    if(g.shield) {
+      g.shield = false;
+      fb.textContent = '🛡️ 护盾保护!';
+      fb.style.color = '#3498db';
+    } else {
+      g.lives--; g.combo = 0;
+      fb.innerHTML = '💡 ' + (q[3] || '再想想');
+      fb.style.color = '#e74c3c';
+      if(g.lives <= 0) { alert('游戏结束!'); go('menu'); return; }
+    }
+    upd();
+  }
+  document.getElementById('combo').textContent = g.combo;
+  setTimeout(()=>{g.qi++; if(g.qi >= 8) { if(g.hp > 0) {g.beat++; save(); go('win');} else {alert('没打完怪兽!'); go('levels');} return;} showQ();}, 1200);
+}
+
+function use(t) {
+  if(g.items[t] <= 0) return;
+  if(t=='hint') {
+    g.items.hint--;
+    let q = g.qs[g.qi];
+    document.getElementById('fb').innerHTML = '💡 ' + (q[3] || '选第'+(q[2]+1)+'个');
+    document.getElementById('fb').style.color = '#3498db';
+  } else if(t=='heal') {
+    if(g.lives >= 3) return alert('生命已满!');
+    g.items.heal--; g.lives++;
+  } else if(t=='shield') {
+    if(g.shield) return;
+    g.items.shield--; g.shield = true;
+    alert('🛡️ 护盾激活!');
+  }
+  save(); upd();
+}
+
+function buy(t) {
+  let p = {hint:30, heal:50, shield:80};
+  if(g.coins < p[t]) return alert('金币不足!');
+  g.coins -= p[t]; g.items[t]++;
+  save(); upd();
+  alert('购买成功!');
+}
+
+function next() { renderLvls(); go('levels'); }
+
+load();
+</script>
+</body>
+</html>
